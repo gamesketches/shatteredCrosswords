@@ -35,7 +35,7 @@ public class cameraBehavior : MonoBehaviour
         if(Vector3.Distance(transform.position, winSpot) < 2)
         {
             Debug.Break();
-            xwd.SetActive(true);
+            //xwd.SetActive(true);
             foreach(GameObject obj in GameObject.FindGameObjectsWithTag(("letters")))
             {
                 obj.SetActive(false);

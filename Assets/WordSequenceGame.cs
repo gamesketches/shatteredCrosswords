@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WordSequenceGame : MonoBehaviour
 {
@@ -11,8 +12,10 @@ public class WordSequenceGame : MonoBehaviour
     public Vector3[] positions;
     public string[] wordStrings;
     public string[] clues;
+    public Text clueText;
     float targetRotation;
     int step = 0;
+    public GameObject xwd;
     List<WordToFind> words;
     List<Transform> foundWords;
 
@@ -21,12 +24,14 @@ public class WordSequenceGame : MonoBehaviour
         public Vector3 position;
         public string word;
         public string clue;
+        public bool vertical;
 
-        public WordToFind(Vector3 pos, string wordString, string clueString)
+        public WordToFind(Vector3 pos, string wordString, string clueString, bool vert)
         {
             position = pos;
             word = wordString;
             clue = clueString;
+            vertical = vert;
         }
     }
 
@@ -37,7 +42,8 @@ public class WordSequenceGame : MonoBehaviour
         foundWords = new List<Transform> ();
         for(int i = 0; i < positions.Length; i++)
         {
-            words.Add(new WordToFind(positions[i], wordStrings[i], clues[i]));
+            words.Add(new WordToFind(positions[i], wordStrings[i], clues[i], vertical));
+            vertical = !vertical;
         }
         GenerateWord(words[0]);
     }
@@ -56,7 +62,13 @@ public class WordSequenceGame : MonoBehaviour
         if(Mathf.Abs(targetRotation - Camera.main.transform.rotation.eulerAngles.y) < 3)
         {
             step++;
-            GenerateWord(words[step]);
+            if(step == words.Count)
+            {
+                xwd.SetActive(true);
+
+            } else {
+                GenerateWord(words[step]);
+                   }
         }
     }
 
@@ -68,9 +80,9 @@ public class WordSequenceGame : MonoBehaviour
         for(int i = 0;  i < letters.Length;  i++) {
             Transform newLetterObj = DuplicateLetterModel(letters[i]);
             newLetterObj.transform.parent = wordWrapper.transform;
-                if(vertical)
+                if(nextWord.vertical)
                 {
-                    newLetterObj.transform.localPosition = new Vector3(0, i * letterOffset, Random.Range(-4,4));
+                    newLetterObj.transform.localPosition = new Vector3(0, i * -letterOffset, Random.Range(-4,4));
                 }
                 else
                 {
@@ -83,6 +95,7 @@ public class WordSequenceGame : MonoBehaviour
         wordWrapper.transform.position = nextWord.position;
         wordWrapper.transform.Rotate(0, targetRotation, 0);
         foundWords.Add(wordWrapper.transform);
+        clueText.text = nextWord.clue;
 
     }
 
